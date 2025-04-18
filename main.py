@@ -15,6 +15,8 @@ def keras():
 def random_regression_tree():
     return render_template('random_regression_tree.html')
 
+currentCode = []
+
 @app.route('/update-layer', methods=['POST'])
 def update_layer():
     global currentCode 

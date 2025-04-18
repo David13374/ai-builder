@@ -149,4 +149,17 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
         });
     });
+
+    const menuButton = document.getElementById('menu-button');
+    const sideMenu = document.getElementById('side-menu');
+
+    menuButton.addEventListener('click', () => {
+        if (sideMenu.classList.contains('open')) {
+            sideMenu.classList.remove('open');
+            menuButton.textContent = 'Open Menu';
+        } else {
+            sideMenu.classList.add('open');
+            menuButton.textContent = 'Close Menu';
+        }
+    });
 });

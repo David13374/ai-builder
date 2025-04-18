@@ -3,8 +3,6 @@ import os
 
 app = Flask(__name__)
 
-currentCode = []
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -40,7 +38,7 @@ def update_layer():
             layerCode += "\n    keras.layers.BatchNormalization(),"
 
         if dropoutRate and float(dropoutRate) > 0:
-            layerCode += f"\n    keras.layers.Dropout({dropoutRate}) ,"
+            layerCode += f"\n    keras.layers.Dropout({dropoutRate}),"
 
         currentCode[layer - 1] = layerCode
 

@@ -1,0 +1,134 @@
+body {
+    margin: 0;
+    height: 100vh; /* Ensure the body takes up the full viewport height */
+    display: flex;
+    flex-direction: column; /* Allow the container to stretch vertically */
+}
+
+.left, .right {
+    flex: 1;
+    padding: 20px;
+}
+
+.left {
+    background-color: #f0f0f0;
+}
+
+.right {
+    background-color: #e0e0e0;
+}
+
+.divider {
+    width: 2px;
+    background-color: #000;
+}
+
+#draggable-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#draggable-list li {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: grab;
+}
+
+#draggable-list li.dragging {
+    opacity: 0.5;
+}
+
+.right {
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-height: 100px;
+    background-color: #f9f9f9;
+}
+
+.centerHeader {
+    text-align: center;
+    margin: 0 auto;
+}
+
+/* Updated styles for Keras page */
+.container {
+    display: flex;
+    height: 100%; /* Ensure the container takes up the full height of the body */
+}
+
+.left-half, .right-half {
+    flex: 1; /* Make both halves equal in width */
+    padding: 20px;
+    height: 100%; /* Ensure both halves stretch to the full height of the container */
+    box-sizing: border-box; /* Include padding in the height calculation */
+}
+
+.left-half {
+    background-color: #f0f0f0;
+}
+
+.right-half {
+    background-color: #e0e0e0;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.input-group label {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.input-group input {
+    padding: 5px;
+    font-size: 16px;
+    width: 100px;
+}
+
+.layer-config {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.dense-label {
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.dense-input {
+    padding: 5px;
+    font-size: 14px;
+    width: 80px;
+    margin-right: 10px;
+}
+
+.activation-select {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.batch-norm-label {
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.batch-norm-checkbox {
+    margin-left: 5px;
+}
+
+.dropout-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.dropout-label {
+    margin-right: 10px; /* Add spacing between the label and input */
+}

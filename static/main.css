@@ -1,8 +1,8 @@
 body {
     margin: 0;
-    height: 100vh; /* Ensure the body takes up the full viewport height */
+    height: 100vh;
     display: flex;
-    flex-direction: column; /* Allow the container to stretch vertically */
+    flex-direction: column;
 }
 
 .left, .right {
@@ -53,17 +53,16 @@ body {
     margin: 0 auto;
 }
 
-/* Updated styles for Keras page */
 .container {
     display: flex;
-    height: 100%; /* Ensure the container takes up the full height of the body */
+    height: 100%;
 }
 
 .left-half, .right-half {
-    flex: 1; /* Make both halves equal in width */
+    flex: 1;
     padding: 20px;
-    height: 100%; /* Ensure both halves stretch to the full height of the container */
-    box-sizing: border-box; /* Include padding in the height calculation */
+    height: 100%; 
+    box-sizing: border-box;
 }
 
 .left-half {
@@ -130,5 +129,5 @@ body {
 }
 
 .dropout-label {
-    margin-right: 10px; /* Add spacing between the label and input */
+    margin-right: 10px;
 }

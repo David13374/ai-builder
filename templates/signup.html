@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <h1>Sign Up</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST">
+            {{ form.csrf_token }}
+            <div class="form-group">
+                <label for="username">Username:</label>
+                {{ form.username(class="form-control") }}
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                {{ form.email(class="form-control") }}
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                {{ form.password(class="form-control") }}
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password:</label>
+                {{ form.confirm_password(class="form-control") }}
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
+</body>
+</html>

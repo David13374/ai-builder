@@ -9,9 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
     numLayersInput.addEventListener('input', () => {
         const numLayers = parseInt(numLayersInput.value) || 0;
-
+        
         if (layerCountDisplay) {
             layerCountDisplay.textContent = `Number of Layers: ${numLayers}`;
         }
@@ -58,7 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const dropoutInput = document.createElement('input');
             dropoutInput.type = 'number';
+            dropoutInput.step = '0.1';
             dropoutInput.min = '0';
+            dropoutInput.max = '1';
             dropoutInput.value = `0`;
             dropoutInput.placeholder = 'Rate';
             dropoutInput.classList.add('dropout-input');
@@ -92,17 +96,88 @@ document.addEventListener('DOMContentLoaded', () => {
             layerDiv.appendChild(dropoutInput);
 
             layerConfigsContainer.appendChild(layerDiv);
-
-            sendLayerUpdate(i + 1, denseInput.value, activationSelect.value, 
-                batchNormCheckbox.checked, dropoutInput.value, numLayers);
         }
+
+        initialUpdate(numLayers);
     });
 
+
+    function initialUpdate(layers) {
+        const loadingIndicator = createLoadingIndicator();
+        document.body.appendChild(loadingIndicator);
+
+        fetch('/initial-update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                maxLayer: layers
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success' && generatedCodeElement) {
+                generatedCodeElement.textContent = data.code.join('\n');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(`Failed to update layer configuration: ${error.message}`);
+        })
+        .finally(() => {
+            loadingIndicator.remove();
+        });
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    const debouncedSendLayerUpdate = debounce(sendLayerUpdate, 100);
+
+    function validateInputs(units, dropoutRate, layers) {
+        if(layers <= 0) {
+            alert('Number of layers must be greater than 0');
+            return false;
+        }
+        if (units <= 0) {
+            alert('Units must be greater than 0');
+            return false;
+        }
+        if (dropoutRate < 0 || dropoutRate > 1) {
+            alert('Dropout rate must be between 0 and 1');
+            return false;
+        }
+        return true;
+    }
+
     function sendLayerUpdate(layerIndex, units, activation, batchNormalization, dropoutRate, layers) {
+        if (!validateInputs(units, dropoutRate, layers)) {
+            return;
+        }
+        const loadingIndicator = createLoadingIndicator();
+        document.body.appendChild(loadingIndicator);
+
         fetch('/update-layer', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
             },
             body: JSON.stringify({
                 maxLayer: layers,
@@ -113,42 +188,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropoutRate: dropoutRate,
             }),
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            if (data.status === 'success') {
-                const updatedCode = data.code;
-                console.log(`Updated Code:\n${updatedCode.join('\n')}`);
-                generatedCodeElement.textContent = updatedCode.join('\n');
+            if (data.status === 'success' && generatedCodeElement) {
+                generatedCodeElement.textContent = data.code.join('\n');
             }
         })
         .catch(error => {
             console.error('Error:', error);
+            alert('Failed to update layer configuration');
+        })
+        .finally(() => {
+            loadingIndicator.remove();
         });
     }
 
     const submitButton = document.getElementById('submit-button');
-
-    submitButton.addEventListener('click', () => {
-        console.log('Submit button clicked!');
-        fetch('/submit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: 'Model submitted!' }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert('Model submitted successfully!');
-            } else {
-                alert(`Failed to submit model. Error: ${data.message}`);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
+    if (submitButton) {
+        submitButton.addEventListener('click', () => {
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Model submitted successfully!');
+                } else {
+                    throw new Error(data.message || 'Failed to submit model');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`Failed to submit model: ${error.message}`);
+            });
         });
-    });
+    }
 
     const menuButton = document.getElementById('menu-button');
     const sideMenu = document.getElementById('side-menu');
@@ -163,3 +251,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+function createLoadingIndicator() {
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'loading-indicator';
+    loadingIndicator.textContent = 'Updating...';
+    return loadingIndicator;
+}
